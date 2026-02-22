@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Waypoint.Core.DTOs;
@@ -7,6 +8,9 @@ using Waypoint.Infrastructure.Repositories;
 using Waypoint.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // EF Core
 builder.Services.AddDbContext<WaypointDbContext>(options =>
@@ -24,6 +28,8 @@ builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<ICsvImportService, CsvImportService>();
 builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<ICreditCardService, CreditCardService>();
+builder.Services.AddSingleton<ICreditCardCalculatorService, CreditCardCalculatorService>();
 
 // OpenAPI / Scalar
 builder.Services.AddOpenApi();
@@ -136,6 +142,98 @@ dashboard.MapGet("/trends", async (int? months, IDashboardService dashboardServi
     return Results.Ok(result);
 })
 .WithName("GetTrends");
+
+// Credit Card Endpoints
+var creditCards = app.MapGroup("/api/creditcards");
+
+creditCards.MapGet("/", async (ICreditCardService svc) =>
+    Results.Ok(await svc.GetAllCardsAsync()))
+.WithName("GetAllCreditCards");
+
+creditCards.MapGet("/{id:guid}", async (Guid id, ICreditCardService svc) =>
+{
+    var card = await svc.GetCardAsync(id);
+    return card is null ? Results.NotFound() : Results.Ok(card);
+})
+.WithName("GetCreditCard");
+
+creditCards.MapPost("/", async (CreateCreditCardDto dto, ICreditCardService svc) =>
+{
+    var card = await svc.CreateCardAsync(dto);
+    return Results.Created($"/api/creditcards/{card.Id}", card);
+})
+.WithName("CreateCreditCard");
+
+creditCards.MapPut("/{id:guid}", async (Guid id, UpdateCreditCardDto dto, ICreditCardService svc) =>
+{
+    try { return Results.Ok(await svc.UpdateCardAsync(id, dto)); }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("UpdateCreditCard");
+
+creditCards.MapDelete("/{id:guid}", async (Guid id, ICreditCardService svc) =>
+{
+    var deleted = await svc.DeleteCardAsync(id);
+    return deleted ? Results.NoContent() : Results.NotFound();
+})
+.WithName("DeleteCreditCard");
+
+creditCards.MapGet("/{id:guid}/metrics", async (Guid id, ICreditCardService svc) =>
+{
+    try { return Results.Ok(await svc.GetCardMetricsAsync(id)); }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("GetCreditCardMetrics");
+
+creditCards.MapGet("/metrics/all", async (ICreditCardService svc) =>
+    Results.Ok(await svc.GetAllCardMetricsAsync()))
+.WithName("GetAllCreditCardMetrics");
+
+creditCards.MapPost("/{id:guid}/payments", async (Guid id, LogPaymentDto dto, ICreditCardService svc) =>
+{
+    try
+    {
+        var payment = await svc.LogPaymentAsync(id, dto);
+        return Results.Ok(payment);
+    }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("LogCreditCardPayment");
+
+creditCards.MapGet("/{id:guid}/payments", async (Guid id, ICreditCardService svc) =>
+    Results.Ok(await svc.GetPaymentHistoryAsync(id)))
+.WithName("GetCreditCardPayments");
+
+creditCards.MapPost("/{id:guid}/statements", async (Guid id, CreateStatementDto dto, ICreditCardService svc) =>
+{
+    try
+    {
+        var statement = await svc.CreateStatementAsync(id, dto);
+        return Results.Ok(statement);
+    }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("CreateCreditCardStatement");
+
+creditCards.MapGet("/{id:guid}/statements", async (Guid id, ICreditCardService svc) =>
+    Results.Ok(await svc.GetStatementsAsync(id)))
+.WithName("GetCreditCardStatements");
+
+creditCards.MapGet("/{id:guid}/payoff", async (Guid id, decimal monthlyPayment, ICreditCardService svc, ICreditCardCalculatorService calc) =>
+{
+    var card = await svc.GetCardAsync(id);
+    if (card is null) return Results.NotFound();
+    return Results.Ok(calc.ProjectSingleCardPayoff(card.CurrentBalance, card.APR, monthlyPayment));
+})
+.WithName("GetCreditCardPayoff");
+
+creditCards.MapGet("/payoff-comparison", async (decimal extraPayment, ICreditCardService svc, ICreditCardCalculatorService calc) =>
+{
+    var cards = await svc.GetAllCardsAsync();
+    if (cards.Count == 0) return Results.NotFound();
+    return Results.Ok(calc.ProjectMultiCardPayoff(cards, extraPayment));
+})
+.WithName("GetPayoffComparison");
 
 app.Run();
 

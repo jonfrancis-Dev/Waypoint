@@ -31,4 +31,33 @@ export const routes: Routes = [
       import('./features/budget/components/budget-planner.component')
         .then(m => m.BudgetPlannerComponent),
   },
+  {
+    path: 'credit-cards',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/credit-cards/components/credit-card-list.component')
+            .then(m => m.CreditCardListComponent),
+      },
+      {
+        path: 'compare',
+        loadComponent: () =>
+          import('./features/credit-cards/components/payoff-comparison.component')
+            .then(m => m.PayoffComparisonComponent),
+      },
+      {
+        path: ':id/metrics',
+        loadComponent: () =>
+          import('./features/credit-cards/components/credit-card-metrics.component')
+            .then(m => m.CreditCardMetricsComponent),
+      },
+      {
+        path: ':id/payoff',
+        loadComponent: () =>
+          import('./features/credit-cards/components/payoff-calculator.component')
+            .then(m => m.PayoffCalculatorComponent),
+      },
+    ],
+  },
 ];
