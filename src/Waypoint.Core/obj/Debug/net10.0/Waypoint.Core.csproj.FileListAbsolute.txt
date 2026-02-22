@@ -1,0 +1,11 @@
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\bin\Debug\net10.0\Waypoint.Core.deps.json
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\bin\Debug\net10.0\Waypoint.Core.dll
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\bin\Debug\net10.0\Waypoint.Core.pdb
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\Waypoint.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\Waypoint.Core.AssemblyInfoInputs.cache
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\Waypoint.Core.AssemblyInfo.cs
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\Waypoint.Core.csproj.CoreCompileInputs.cache
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\Waypoint.Core.dll
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\refint\Waypoint.Core.dll
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\Waypoint.Core.pdb
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\ref\Waypoint.Core.dll

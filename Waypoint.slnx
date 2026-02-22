@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Waypoint.API/Waypoint.API.csproj" />
+    <Project Path="src/Waypoint.Core/Waypoint.Core.csproj" />
+    <Project Path="src/Waypoint.Infrastructure/Waypoint.Infrastructure.csproj" />
+  </Folder>
+</Solution>
