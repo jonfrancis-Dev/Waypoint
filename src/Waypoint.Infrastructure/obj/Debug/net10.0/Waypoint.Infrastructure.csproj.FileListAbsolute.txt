@@ -15,3 +15,4 @@ C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Infrastructure\ob
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Infrastructure\obj\Debug\net10.0\Waypoint.Infrastructure.pdb
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Infrastructure\obj\Debug\net10.0\Waypoint.Infrastructure.genruntimeconfig.cache
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Infrastructure\obj\Debug\net10.0\ref\Waypoint.Infrastructure.dll
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Infrastructure\obj\Debug\net10.0\Waypoint.Infrastructure.sourcelink.json

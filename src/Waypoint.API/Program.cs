@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Waypoint.Core.DTOs;
 using Waypoint.Core.Interfaces;
 using Waypoint.Infrastructure.Data;
 using Waypoint.Infrastructure.Repositories;
@@ -21,6 +22,8 @@ builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 
 // Services
 builder.Services.AddScoped<ICsvImportService, CsvImportService>();
+builder.Services.AddScoped<IBudgetService, BudgetService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 // OpenAPI / Scalar
 builder.Services.AddOpenApi();
@@ -86,4 +89,55 @@ transactions.MapGet("/", async (int month, int year, ITransactionRepository repo
 })
 .WithName("GetTransactions");
 
+// Budget Endpoints
+var budget = app.MapGroup("/api/budget");
+
+budget.MapPost("/", async (BudgetCreateRequest request, IBudgetService budgetService) =>
+{
+    var result = await budgetService.CreateOrUpdateBudgetAsync(request.Month, request.Year, request.LineItems);
+    return Results.Ok(result);
+})
+.WithName("CreateOrUpdateBudget");
+
+budget.MapGet("/", async (int month, int year, IBudgetService budgetService) =>
+{
+    var result = await budgetService.GetBudgetAsync(month, year);
+    return result is null ? Results.NotFound() : Results.Ok(result);
+})
+.WithName("GetBudget");
+
+budget.MapGet("/summary", async (int month, int year, IBudgetService budgetService) =>
+{
+    var result = await budgetService.GetBudgetSummaryAsync(month, year);
+    return result is null ? Results.NotFound() : Results.Ok(result);
+})
+.WithName("GetBudgetSummary");
+
+budget.MapDelete("/{id:guid}", async (Guid id, IBudgetService budgetService) =>
+{
+    var deleted = await budgetService.DeleteBudgetAsync(id);
+    return deleted ? Results.NoContent() : Results.NotFound();
+})
+.WithName("DeleteBudget");
+
+// Dashboard Endpoints
+var dashboard = app.MapGroup("/api/dashboard");
+
+dashboard.MapGet("/summary", async (int month, int year, IDashboardService dashboardService) =>
+{
+    var result = await dashboardService.GetDashboardSummaryAsync(month, year);
+    return Results.Ok(result);
+})
+.WithName("GetDashboardSummary");
+
+dashboard.MapGet("/trends", async (int? months, IDashboardService dashboardService) =>
+{
+    var result = await dashboardService.GetTrendsAsync(months ?? 6);
+    return Results.Ok(result);
+})
+.WithName("GetTrends");
+
 app.Run();
+
+// Request DTOs
+record BudgetCreateRequest(int Month, int Year, List<BudgetLineItemDto> LineItems);

@@ -1,7 +1,13 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'transactions', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/components/dashboard.component')
+        .then(m => m.DashboardComponent),
+  },
   {
     path: 'transactions',
     children: [
@@ -18,5 +24,11 @@ export const routes: Routes = [
             .then(m => m.TransactionUploadComponent),
       },
     ],
+  },
+  {
+    path: 'budget',
+    loadComponent: () =>
+      import('./features/budget/components/budget-planner.component')
+        .then(m => m.BudgetPlannerComponent),
   },
 ];

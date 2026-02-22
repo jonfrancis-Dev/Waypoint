@@ -162,3 +162,4 @@ C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.API\obj\Debug\net
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.API\obj\Debug\net10.0\Waypoint.API.pdb
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.API\obj\Debug\net10.0\Waypoint.API.genruntimeconfig.cache
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.API\obj\Debug\net10.0\ref\Waypoint.API.dll
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.API\obj\Debug\net10.0\Waypoint.API.sourcelink.json

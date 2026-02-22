@@ -9,3 +9,4 @@ C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\ne
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\refint\Waypoint.Core.dll
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\Waypoint.Core.pdb
 C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\ref\Waypoint.Core.dll
+C:\Users\Work\source\repos\JF_Playground\Waypoint\src\Waypoint.Core\obj\Debug\net10.0\Waypoint.Core.sourcelink.json
