@@ -10,7 +10,10 @@ using Waypoint.Infrastructure.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
-    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+{
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 // EF Core
 builder.Services.AddDbContext<WaypointDbContext>(options =>
@@ -30,6 +33,9 @@ builder.Services.AddScoped<IBudgetService, BudgetService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ICreditCardService, CreditCardService>();
 builder.Services.AddSingleton<ICreditCardCalculatorService, CreditCardCalculatorService>();
+builder.Services.AddScoped<IDebtService, DebtService>();
+builder.Services.AddSingleton<IDebtCalculatorService, DebtCalculatorService>();
+builder.Services.AddScoped<IUnifiedDebtService, UnifiedDebtService>();
 
 // OpenAPI / Scalar
 builder.Services.AddOpenApi();
@@ -234,6 +240,88 @@ creditCards.MapGet("/payoff-comparison", async (decimal extraPayment, ICreditCar
     return Results.Ok(calc.ProjectMultiCardPayoff(cards, extraPayment));
 })
 .WithName("GetPayoffComparison");
+
+// Debt Endpoints
+var debts = app.MapGroup("/api/debts");
+
+debts.MapGet("/", async (IDebtService svc) =>
+    Results.Ok(await svc.GetAllDebtsAsync()))
+.WithName("GetAllDebts");
+
+debts.MapGet("/{id:guid}", async (Guid id, IDebtService svc) =>
+{
+    var debt = await svc.GetDebtAsync(id);
+    return debt is null ? Results.NotFound() : Results.Ok(debt);
+})
+.WithName("GetDebt");
+
+debts.MapPost("/", async (CreateDebtDto dto, IDebtService svc) =>
+{
+    var debt = await svc.CreateDebtAsync(dto);
+    return Results.Created($"/api/debts/{debt.Id}", debt);
+})
+.WithName("CreateDebt");
+
+debts.MapPut("/{id:guid}", async (Guid id, UpdateDebtDto dto, IDebtService svc) =>
+{
+    try { return Results.Ok(await svc.UpdateDebtAsync(id, dto)); }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("UpdateDebt");
+
+debts.MapDelete("/{id:guid}", async (Guid id, IDebtService svc) =>
+{
+    var deleted = await svc.DeleteDebtAsync(id);
+    return deleted ? Results.NoContent() : Results.NotFound();
+})
+.WithName("DeleteDebt");
+
+debts.MapGet("/{id:guid}/metrics", async (Guid id, IDebtService svc) =>
+{
+    try { return Results.Ok(await svc.GetDebtMetricsAsync(id)); }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("GetDebtMetrics");
+
+debts.MapGet("/metrics/all", async (IDebtService svc) =>
+    Results.Ok(await svc.GetAllDebtMetricsAsync()))
+.WithName("GetAllDebtMetrics");
+
+debts.MapGet("/summary", async (IDebtService svc) =>
+    Results.Ok(await svc.GetDebtSummaryAsync()))
+.WithName("GetDebtSummary");
+
+debts.MapPost("/{id:guid}/payments", async (Guid id, LogDebtPaymentDto dto, IDebtService svc) =>
+{
+    try
+    {
+        var payment = await svc.LogPaymentAsync(id, dto);
+        return Results.Ok(payment);
+    }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("LogDebtPayment");
+
+debts.MapGet("/{id:guid}/payments", async (Guid id, IDebtService svc) =>
+    Results.Ok(await svc.GetPaymentHistoryAsync(id)))
+.WithName("GetDebtPayments");
+
+debts.MapGet("/{id:guid}/payoff", async (Guid id, decimal monthlyPayment, IDebtService svc, IDebtCalculatorService calc) =>
+{
+    var debt = await svc.GetDebtAsync(id);
+    if (debt is null) return Results.NotFound();
+    return Results.Ok(calc.ProjectDebtPayoff(debt.CurrentBalance, debt.APR, monthlyPayment));
+})
+.WithName("GetDebtPayoff");
+
+// Unified Debt Endpoints
+debts.MapGet("/unified/dashboard", async (IUnifiedDebtService svc) =>
+    Results.Ok(await svc.GetUnifiedDashboardAsync()))
+.WithName("GetUnifiedDebtDashboard");
+
+debts.MapGet("/unified/payoff-comparison", async (decimal extraPayment, IUnifiedDebtService svc) =>
+    Results.Ok(await svc.GetUnifiedPayoffComparisonAsync(extraPayment)))
+.WithName("GetUnifiedPayoffComparison");
 
 app.Run();
 

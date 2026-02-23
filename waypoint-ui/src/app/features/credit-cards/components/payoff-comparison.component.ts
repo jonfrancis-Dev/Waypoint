@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSliderModule } from '@angular/material/slider';
@@ -15,7 +15,7 @@ import { MultiCardPayoffComparison } from '../../../models/credit-card.model';
 @Component({
   selector: 'app-payoff-comparison',
   imports: [
-    CurrencyPipe, DatePipe, FormsModule,
+    CurrencyPipe, DatePipe, FormsModule, RouterLink,
     MatCardModule, MatFormFieldModule, MatSliderModule, MatChipsModule, MatIconModule, MatButtonModule,
   ],
   template: `

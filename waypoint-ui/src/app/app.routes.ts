@@ -60,4 +60,44 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'debts',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/debts/components/debt-list.component')
+            .then(m => m.DebtListComponent),
+      },
+      {
+        path: ':id/metrics',
+        loadComponent: () =>
+          import('./features/debts/components/debt-metrics.component')
+            .then(m => m.DebtMetricsComponent),
+      },
+      {
+        path: ':id/payoff',
+        loadComponent: () =>
+          import('./features/debts/components/debt-payoff-calculator.component')
+            .then(m => m.DebtPayoffCalculatorComponent),
+      },
+    ],
+  },
+  {
+    path: 'debt-overview',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/unified-debt/components/unified-debt-dashboard.component')
+            .then(m => m.UnifiedDebtDashboardComponent),
+      },
+      {
+        path: 'payoff-comparison',
+        loadComponent: () =>
+          import('./features/unified-debt/components/unified-payoff-comparison.component')
+            .then(m => m.UnifiedPayoffComparisonComponent),
+      },
+    ],
+  },
 ];

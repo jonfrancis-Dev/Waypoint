@@ -29,6 +29,24 @@ public class DebtRepository : IDebtRepository
         await _context.Debts.AddAsync(debt);
     }
 
+    public void Delete(Debt debt)
+    {
+        _context.Debts.Remove(debt);
+    }
+
+    public async Task AddPaymentAsync(DebtPayment payment)
+    {
+        await _context.DebtPayments.AddAsync(payment);
+    }
+
+    public async Task<List<DebtPayment>> GetPaymentsAsync(Guid debtId)
+    {
+        return await _context.DebtPayments
+            .Where(p => p.DebtId == debtId)
+            .OrderByDescending(p => p.PaidOn)
+            .ToListAsync();
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

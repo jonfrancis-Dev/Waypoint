@@ -10,11 +10,13 @@ import { MatButtonModule } from '@angular/material/button';
     <mat-toolbar color="primary">
       <span>Waypoint</span>
       <span class="spacer"></span>
-      <a mat-button routerLink="/dashboard" routerLinkActive="active-link">Dashboard</a>
-      <a mat-button routerLink="/transactions" routerLinkActive="active-link">Transactions</a>
-      <a mat-button routerLink="/transactions/upload" routerLinkActive="active-link">Upload</a>
-      <a mat-button routerLink="/budget" routerLinkActive="active-link">Budget</a>
-      <a mat-button routerLink="/credit-cards" routerLinkActive="active-link">Credit Cards</a>
+      <a mat-button [routerLink]="['/dashboard']" routerLinkActive="active-link">Dashboard</a>
+      <a mat-button [routerLink]="['/transactions']" routerLinkActive="active-link">Transactions</a>
+      <a mat-button [routerLink]="['/transactions/upload']" routerLinkActive="active-link">Upload</a>
+      <a mat-button [routerLink]="['/budget']" routerLinkActive="active-link">Budget</a>
+      <a mat-button [routerLink]="['/credit-cards']" routerLinkActive="active-link">Credit Cards</a>
+      <a mat-button [routerLink]="['/debts']" routerLinkActive="active-link">Debts</a>
+      <a mat-button [routerLink]="['/debt-overview']" routerLinkActive="active-link">Debt Overview</a>
     </mat-toolbar>
     <main class="content">
       <router-outlet />
