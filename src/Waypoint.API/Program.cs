@@ -36,6 +36,8 @@ builder.Services.AddSingleton<ICreditCardCalculatorService, CreditCardCalculator
 builder.Services.AddScoped<IDebtService, DebtService>();
 builder.Services.AddSingleton<IDebtCalculatorService, DebtCalculatorService>();
 builder.Services.AddScoped<IUnifiedDebtService, UnifiedDebtService>();
+builder.Services.AddScoped<ISavingsService, SavingsService>();
+builder.Services.AddSingleton<ISavingsCalculatorService, SavingsCalculatorService>();
 
 // OpenAPI / Scalar
 builder.Services.AddOpenApi();
@@ -322,6 +324,87 @@ debts.MapGet("/unified/dashboard", async (IUnifiedDebtService svc) =>
 debts.MapGet("/unified/payoff-comparison", async (decimal extraPayment, IUnifiedDebtService svc) =>
     Results.Ok(await svc.GetUnifiedPayoffComparisonAsync(extraPayment)))
 .WithName("GetUnifiedPayoffComparison");
+
+// Savings Endpoints
+var savings = app.MapGroup("/api/savings");
+
+savings.MapGet("/", async (ISavingsService svc) =>
+    Results.Ok(await svc.GetAllGoalsAsync()))
+.WithName("GetAllSavingsGoals");
+
+savings.MapGet("/{id:guid}", async (Guid id, ISavingsService svc) =>
+{
+    var goal = await svc.GetGoalAsync(id);
+    return goal is null ? Results.NotFound() : Results.Ok(goal);
+})
+.WithName("GetSavingsGoal");
+
+savings.MapPost("/", async (CreateSavingsGoalDto dto, ISavingsService svc) =>
+{
+    var goal = await svc.CreateGoalAsync(dto);
+    return Results.Created($"/api/savings/{goal.Id}", goal);
+})
+.WithName("CreateSavingsGoal");
+
+savings.MapPut("/{id:guid}", async (Guid id, UpdateSavingsGoalDto dto, ISavingsService svc) =>
+{
+    try { return Results.Ok(await svc.UpdateGoalAsync(id, dto)); }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("UpdateSavingsGoal");
+
+savings.MapDelete("/{id:guid}", async (Guid id, ISavingsService svc) =>
+{
+    var deleted = await svc.DeleteGoalAsync(id);
+    return deleted ? Results.NoContent() : Results.NotFound();
+})
+.WithName("DeleteSavingsGoal");
+
+savings.MapGet("/{id:guid}/progress", async (Guid id, ISavingsService svc) =>
+{
+    try { return Results.Ok(await svc.GetGoalProgressAsync(id)); }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("GetSavingsGoalProgress");
+
+savings.MapGet("/progress/all", async (ISavingsService svc) =>
+    Results.Ok(await svc.GetAllGoalProgressAsync()))
+.WithName("GetAllSavingsGoalProgress");
+
+savings.MapGet("/summary", async (ISavingsService svc) =>
+    Results.Ok(await svc.GetSavingsSummaryAsync()))
+.WithName("GetSavingsSummary");
+
+savings.MapPost("/{id:guid}/contribute", async (Guid id, LogContributionDto dto, ISavingsService svc) =>
+{
+    try
+    {
+        var contribution = await svc.LogContributionAsync(id, dto);
+        return Results.Ok(contribution);
+    }
+    catch (KeyNotFoundException) { return Results.NotFound(); }
+})
+.WithName("LogSavingsContribution");
+
+savings.MapGet("/{id:guid}/contributions", async (Guid id, ISavingsService svc) =>
+    Results.Ok(await svc.GetContributionHistoryAsync(id)))
+.WithName("GetSavingsContributions");
+
+savings.MapGet("/{id:guid}/projection", async (Guid id, decimal monthlyContribution, ISavingsService svc, ISavingsCalculatorService calc) =>
+{
+    var goal = await svc.GetGoalAsync(id);
+    if (goal is null) return Results.NotFound();
+    return Results.Ok(calc.ProjectGoalCompletion(goal.CurrentAmount, goal.TargetAmount, monthlyContribution, goal.TargetDate));
+})
+.WithName("GetSavingsProjection");
+
+savings.MapGet("/recommendations", async (decimal? availableIncome, ISavingsService svc, ISavingsCalculatorService calc) =>
+{
+    var progressList = await svc.GetAllGoalProgressAsync();
+    var recommendations = calc.GenerateRecommendations(progressList, availableIncome ?? 0, 0);
+    return Results.Ok(recommendations);
+})
+.WithName("GetSavingsRecommendations");
 
 app.Run();
 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Waypoint.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd430bd014fc242ac83502c3997a06cb123d07ee")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e1f862271da04113227668631fe5568ee3dcb041")]
 [assembly: System.Reflection.AssemblyProductAttribute("Waypoint.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Waypoint.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

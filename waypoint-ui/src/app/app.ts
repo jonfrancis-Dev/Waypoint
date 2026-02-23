@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
       <a mat-button [routerLink]="['/credit-cards']" routerLinkActive="active-link">Credit Cards</a>
       <a mat-button [routerLink]="['/debts']" routerLinkActive="active-link">Debts</a>
       <a mat-button [routerLink]="['/debt-overview']" routerLinkActive="active-link">Debt Overview</a>
+      <a mat-button [routerLink]="['/savings']" routerLinkActive="active-link">Savings</a>
     </mat-toolbar>
     <main class="content">
       <router-outlet />

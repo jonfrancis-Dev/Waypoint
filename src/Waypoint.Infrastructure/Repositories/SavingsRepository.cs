@@ -29,6 +29,24 @@ public class SavingsRepository : ISavingsRepository
         await _context.SavingsGoals.AddAsync(goal);
     }
 
+    public void Delete(SavingsGoal goal)
+    {
+        _context.SavingsGoals.Remove(goal);
+    }
+
+    public async Task AddContributionAsync(SavingsContribution contribution)
+    {
+        await _context.SavingsContributions.AddAsync(contribution);
+    }
+
+    public async Task<List<SavingsContribution>> GetContributionsAsync(Guid goalId)
+    {
+        return await _context.SavingsContributions
+            .Where(c => c.SavingsGoalId == goalId)
+            .OrderByDescending(c => c.ContributedOn)
+            .ToListAsync();
+    }
+
     public async Task SaveChangesAsync()
     {
         await _context.SaveChangesAsync();

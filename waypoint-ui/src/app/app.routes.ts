@@ -100,4 +100,27 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'savings',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/savings/components/savings-dashboard.component')
+            .then(m => m.SavingsDashboardComponent),
+      },
+      {
+        path: 'recommendations',
+        loadComponent: () =>
+          import('./features/savings/components/savings-recommendations.component')
+            .then(m => m.SavingsRecommendationsComponent),
+      },
+      {
+        path: ':id/details',
+        loadComponent: () =>
+          import('./features/savings/components/savings-projection-chart.component')
+            .then(m => m.SavingsProjectionChartComponent),
+      },
+    ],
+  },
 ];
